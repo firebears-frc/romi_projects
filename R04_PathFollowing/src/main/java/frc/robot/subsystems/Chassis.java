@@ -5,14 +5,15 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.romi.RomiGyro;
 import edu.wpi.first.wpilibj.romi.RomiMotor;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.*;
@@ -34,9 +35,6 @@ public class Chassis extends SubsystemBase {
 
   // Set up the RomiGyro
   private final RomiGyro m_gyro = new RomiGyro();
-
-  // Set up the BuiltInAccelerometer
-  private final BuiltInAccelerometer m_accelerometer = new BuiltInAccelerometer();
 
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
@@ -61,30 +59,50 @@ public class Chassis extends SubsystemBase {
     m_odometry = new DifferentialDriveOdometry(m_gyro.getRotation2d(), 0.0, 0.0);
   }
 
+  /** Drive the robot based on values in the range -1.0 to 1.0. */
   public void arcadeDrive(double speed, double rotation) {
     m_diffDrive.arcadeDrive(speed, -1 * rotation);
   }
 
+  /** Reset left and right encoder distances to zero. */
   public void resetEncoders() {
     m_leftEncoder.reset();
     m_rightEncoder.reset();
   }
 
-  public double getLeftDistanceInch() {
+  /** @return left encoder distance in meters. */
+  public double getLeftDistance() {
     return m_leftEncoder.getDistance();
   }
 
-  public double getRightDistanceInch() {
+  /** @return right encoder distance in meters. */
+  public double getRightDistance() {
     return m_rightEncoder.getDistance();
+  }
+
+  /** @return current angle in radians. */
+  public Rotation2d getGyroAngle() {
+    return m_gyro.getRotation2d();
   }
 
   @Override
   public void periodic() {
-    // Update the odometry in the periodic block
-    m_odometry.update(m_gyro.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+    // Update the odometry
+    Rotation2d gyroAngleRadians = getGyroAngle();
+    double leftDistanceMeters = getLeftDistance();
+    double rightDistanceMeters = getRightDistance();
+    m_odometry.update(gyroAngleRadians, leftDistanceMeters, rightDistanceMeters);
 
     // Also update the Field2D object (so that we can visualize this in sim)
-    m_field2d.setRobotPose(getPose());
+    Pose2d currentPose = getPose();
+    m_field2d.setRobotPose(currentPose);
+
+    if (DEBUG) {
+      SmartDashboard.putNumber("gyroAngleRadians", gyroAngleRadians.getRadians());
+      SmartDashboard.putNumber("leftDistanceMeters", leftDistanceMeters);
+      SmartDashboard.putNumber("rightDistanceMeters", rightDistanceMeters);
+      SmartDashboard.putString("currentPose", currentPose.toString());
+    }
   }
 
   @Override
@@ -92,37 +110,36 @@ public class Chassis extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
 
+  /** Drive the robot based on voltage values. */
   public void tankDriveVolts(double leftVolts, double rightVolts) {
     m_leftMotor.setVoltage(leftVolts);
     m_rightMotor.setVoltage(rightVolts);
     m_diffDrive.feed();
   }
 
+  /** @return The current wheel speeds in meters per second. */
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    double leftMetersPerSecond = m_leftEncoder.getRate();
+    double rightMetersPerSecond = m_rightEncoder.getRate();
+    return new DifferentialDriveWheelSpeeds(leftMetersPerSecond, rightMetersPerSecond);
+  }
+
   /**
-   * Returns the currently estimated pose of the robot.
+   * Returns the currently estimated odometry pose of the robot.
    * 
-   * @return The pose
+   * @return robot pose in radians and meters.
    */
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
   }
 
   /**
-   * Returns the current wheel speeds of the robot.
-   * 
-   * @return The current wheel speeds
-   */
-  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(m_leftEncoder.getRate(), m_rightEncoder.getRate());
-  }
-
-  /**
    * Resets the odometry to the specified pose
    * 
-   * @param pose The pose to which to set the odometry
+   * @param pose The pose to which to set the odometry, in radians and meters.
    */
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    m_odometry.resetPosition(m_gyro.getRotation2d(), 0.0, 0.0, pose);
+    m_odometry.resetPosition(getGyroAngle(), 0.0, 0.0, pose);
   }
 }

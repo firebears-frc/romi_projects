@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,12 +52,22 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     if (autonomousCommand == null) {
+
       // autonomousCommand = new ChassisPathWeaverCommand("eight.wpilib.json",
       // chassis);
-      autonomousCommand = new ChassisWaypointCommand(List.of(
-          new Translation2d(0.5, 0.25),
-          new Translation2d(1.0, 0),
-          new Translation2d(0.5, -0.25)), chassis);
+
+      // autonomousCommand = new ChassisWaypointCommand(List.of(
+      // new Translation2d(0.5, 0.25),
+      // new Translation2d(1.0, 0),
+      // new Translation2d(0.5, -0.25)), chassis);
+
+      autonomousCommand = new ChassisWaypointCommand(
+          new Pose2d(0, 0, new Rotation2d(0)),
+          List.of(
+              new Translation2d(0.7, 0.3),
+              new Translation2d(1.3, -0.3)),
+          new Pose2d(2.0, 0.0, new Rotation2d(0.0)),
+          chassis);
     }
     return autonomousCommand;
   }

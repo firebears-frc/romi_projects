@@ -20,15 +20,32 @@ import static frc.robot.Constants.*;
 public class ChassisWaypointCommand extends AbstractTrajectoryCommand {
 
   private final List<Translation2d> waypoints;
+  private final Pose2d startPose;
+  private final Pose2d endPose;
+
+  /**
+   * @param startPose initial robot pose before driving.
+   * @param waypoints list of waypoints, measured in meters.
+   * @param endPose   final robot pose after driving.
+   * @param chassis   The {@link Chassis} subsystem.
+   */
+  public ChassisWaypointCommand(Pose2d startPose, List<Translation2d> waypoints, Pose2d endPose, Chassis chassis) {
+    super(chassis);
+    this.waypoints = waypoints;
+    this.startPose = startPose;
+    this.endPose = endPose;
+    this.trajectory = generateTrajectory();
+  }
 
   /**
    * @param waypoints List of waypoints, measured in meters.
    * @param chassis   The {@link Chassis} subsystem.
    */
   public ChassisWaypointCommand(List<Translation2d> waypoints, Chassis chassis) {
-    super(chassis);
-    this.waypoints = waypoints;
-    this.trajectory = generateTrajectory();
+    this(new Pose2d(0, 0, new Rotation2d(0)),
+        waypoints,
+        new Pose2d(0.0, 0, new Rotation2d(Math.PI)),
+        chassis);
   }
 
   @Override
@@ -46,9 +63,9 @@ public class ChassisWaypointCommand extends AbstractTrajectoryCommand {
         .addConstraint(autoVoltageConstraint);
 
     return TrajectoryGenerator.generateTrajectory(
-        new Pose2d(0, 0, new Rotation2d(0)),
+        this.startPose,
         this.waypoints,
-        new Pose2d(0.0, 0, new Rotation2d(Math.PI)),
+        this.endPose,
         config);
   }
 }
