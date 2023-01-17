@@ -64,6 +64,10 @@ public class Chassis extends SubsystemBase {
     m_diffDrive.arcadeDrive(speed, -1 * rotation);
   }
 
+  public void stop() {
+    m_diffDrive.arcadeDrive(0, 0);
+  }
+
   /** Reset left and right encoder distances to zero. */
   public void resetEncoders() {
     m_leftEncoder.reset();

@@ -9,9 +9,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import java.util.List;
+
+import static frc.robot.commands.ChassisPoseListCommand.makeWaypoint;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -51,25 +54,30 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    if (autonomousCommand == null) {
+    // autonomousCommand = new ChassisPathWeaverCommand("eight.wpilib.json",
+    // chassis);
 
-      // autonomousCommand = new ChassisPathWeaverCommand("eight.wpilib.json",
-      // chassis);
+    // autonomousCommand = new ChassisWaypointCommand(List.of(
+    // new Translation2d(0.5, 0.25),
+    // new Translation2d(1.0, 0),
+    // new Translation2d(0.5, -0.25)), chassis);
 
-      // autonomousCommand = new ChassisWaypointCommand(List.of(
-      // new Translation2d(0.5, 0.25),
-      // new Translation2d(1.0, 0),
-      // new Translation2d(0.5, -0.25)), chassis);
+    // autonomousCommand = new ChassisWaypointCommand(
+    // new Pose2d(0, 0, new Rotation2d(0)),
+    // List.of(
+    // new Translation2d(0.7, 0.3),
+    // new Translation2d(1.3, -0.3)),
+    // new Pose2d(2.0, 0.0, new Rotation2d(0.0)),
+    // chassis);
 
-      autonomousCommand = new ChassisWaypointCommand(
-          new Pose2d(0, 0, new Rotation2d(0)),
-          List.of(
-              new Translation2d(0.7, 0.3),
-              new Translation2d(1.3, -0.3)),
-          new Pose2d(2.0, 0.0, new Rotation2d(0.0)),
-          chassis);
-    }
-    return autonomousCommand;
+    autonomousCommand = new ChassisPoseListCommand(
+        List.of(
+            makeWaypoint(0.7, 0.3, 0),
+            makeWaypoint(1.3, -0.3, 0),
+            makeWaypoint(1.5, 0.0, 90)),
+        chassis);
+
+    return autonomousCommand
+        .andThen(() -> chassis.stop());
   }
-
 }

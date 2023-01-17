@@ -3,49 +3,32 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.Chassis;
 import java.util.List;
 
 import static frc.robot.Constants.*;
 
 /**
- * Command that drives the robot through a list of {@link Translation2d} waypoints.
+ * Command that drives the robot through a list of {@link Pose2d} waypoints.
  */
-public class ChassisWaypointCommand extends AbstractTrajectoryCommand {
+public class ChassisPoseListCommand extends AbstractTrajectoryCommand {
 
-  private final List<Translation2d> waypoints;
-  private final Pose2d startPose;
-  private final Pose2d endPose;
+  private final List<Pose2d> poseWaypoints;
 
   /**
-   * @param startPose initial robot pose before driving.
-   * @param waypoints list of waypoints, measured in meters.
-   * @param endPose   final robot pose after driving.
-   * @param chassis   The {@link Chassis} subsystem.
+   * @param poses   list of {@code Pose2d} waypoints, in meters and radians.
+   * @param chassis The {@link Chassis} subsystem.
    */
-  public ChassisWaypointCommand(Pose2d startPose, List<Translation2d> waypoints, Pose2d endPose, Chassis chassis) {
+  public ChassisPoseListCommand(List<Pose2d> poseWaypoints, Chassis chassis) {
     super(chassis);
-    this.waypoints = waypoints;
-    this.startPose = startPose;
-    this.endPose = endPose;
+    this.poseWaypoints = poseWaypoints;
     this.trajectory = generateTrajectory();
-  }
-
-  /**
-   * @param waypoints List of waypoints, measured in meters.
-   * @param chassis   The {@link Chassis} subsystem.
-   */
-  public ChassisWaypointCommand(List<Translation2d> waypoints, Chassis chassis) {
-    this(new Pose2d(0, 0, new Rotation2d(0)),
-        waypoints,
-        new Pose2d(0.0, 0, new Rotation2d(Math.PI)),
-        chassis);
   }
 
   @Override
@@ -63,9 +46,19 @@ public class ChassisWaypointCommand extends AbstractTrajectoryCommand {
         .addConstraint(autoVoltageConstraint);
 
     return TrajectoryGenerator.generateTrajectory(
-        this.startPose,
-        this.waypoints,
-        this.endPose,
+        this.poseWaypoints,
         config);
+  }
+
+  /**
+   * Convenience function to make a {@code Pose2d} with three simple arguments.
+   * 
+   * @param x     dimension in meters.
+   * @param y     dimension in meters.
+   * @param angleDegrees angle in degrees.
+   * @return a new {@code Pose2d}.
+   */
+  public static Pose2d makeWaypoint(double x, double y, double angle) {
+    return new Pose2d(x, y, new Rotation2d(Units.degreesToRadians(angle)));
   }
 }
