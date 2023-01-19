@@ -44,11 +44,7 @@ public class Chassis extends SubsystemBase {
 
   /** Creates a new RomiDrivetrain. */
   public Chassis() {
-    // Use inches as unit for encoder distances
-    // m_leftEncoder.setDistancePerPulse((Math.PI * kWheelDiameterInch) /
-    // kCountsPerRevolution);
-    // m_rightEncoder.setDistancePerPulse((Math.PI * kWheelDiameterInch) /
-    // kCountsPerRevolution);
+    // Use meters as unit for encoder distances
     m_leftEncoder.setDistancePerPulse((Math.PI * ROMI_WHEEL_DIAMETER_METER) / ROMI_COUNTS_PER_REVOLUTION);
     m_rightEncoder.setDistancePerPulse((Math.PI * ROMI_WHEEL_DIAMETER_METER) / ROMI_COUNTS_PER_REVOLUTION);
     resetEncoders();
@@ -84,15 +80,15 @@ public class Chassis extends SubsystemBase {
     return m_rightEncoder.getDistance();
   }
 
-  /** @return current angle in radians. */
-  public Rotation2d getGyroAngle() {
-    return m_gyro.getRotation2d();
+    /** @return current angle in degrees. */
+  public double getAngle() {
+    return m_gyro.getAngle();
   }
 
   @Override
   public void periodic() {
     // Update the odometry
-    Rotation2d gyroAngleRadians = getGyroAngle();
+    Rotation2d gyroAngleRadians = Rotation2d.fromDegrees(-getAngle());
     double leftDistanceMeters = getLeftDistance();
     double rightDistanceMeters = getRightDistance();
     m_odometry.update(gyroAngleRadians, leftDistanceMeters, rightDistanceMeters);
@@ -144,6 +140,6 @@ public class Chassis extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    m_odometry.resetPosition(getGyroAngle(), 0.0, 0.0, pose);
+    m_odometry.resetPosition(Rotation2d.fromDegrees(-getAngle()), 0.0, 0.0, pose);
   }
 }

@@ -2,13 +2,11 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.Chassis;
 import java.util.List;
 
@@ -48,17 +46,5 @@ public class ChassisPoseListCommand extends AbstractTrajectoryCommand {
     return TrajectoryGenerator.generateTrajectory(
         this.poseWaypoints,
         config);
-  }
-
-  /**
-   * Convenience function to make a {@code Pose2d} with three simple arguments.
-   * 
-   * @param x     dimension in meters.
-   * @param y     dimension in meters.
-   * @param angleDegrees angle in degrees.
-   * @return a new {@code Pose2d}.
-   */
-  public static Pose2d makeWaypoint(double x, double y, double angle) {
-    return new Pose2d(x, y, new Rotation2d(Units.degreesToRadians(angle)));
   }
 }

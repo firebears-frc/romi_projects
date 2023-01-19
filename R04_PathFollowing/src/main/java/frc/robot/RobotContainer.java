@@ -6,15 +6,12 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import java.util.List;
-
-import static frc.robot.commands.ChassisPoseListCommand.makeWaypoint;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -72,9 +69,9 @@ public class RobotContainer {
 
     autonomousCommand = new ChassisPoseListCommand(
         List.of(
-            makeWaypoint(0.7, 0.3, 0),
-            makeWaypoint(1.3, -0.3, 0),
-            makeWaypoint(1.5, 0.0, 90)),
+          new Pose2d(0.7, 0.3, new Rotation2d(Units.degreesToRadians(0))),
+          new Pose2d(1.3, -0.3, new Rotation2d(Units.degreesToRadians(0))),
+          new Pose2d(1.5, 0.0, new Rotation2d(Units.degreesToRadians(90))) ),
         chassis);
 
     return autonomousCommand
