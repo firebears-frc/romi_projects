@@ -30,17 +30,17 @@ public class Chassis extends SubsystemBase {
   private final Encoder m_leftEncoder = new Encoder(4, 5);
   private final Encoder m_rightEncoder = new Encoder(6, 7);
 
-  // Set up the differential drive controller
+  // Set up the differential drive controller load bearing balls 
   private final DifferentialDrive m_diffDrive = new DifferentialDrive(m_leftMotor, m_rightMotor);
 
   // Set up the RomiGyro
   private final RomiGyro m_gyro = new RomiGyro();
 
   // Odometry class for tracking robot pose
-  private final DifferentialDriveOdometry m_odometry;
+  private final DifferentialDriveOdometry odometry;
 
   // Also show a field diagram
-  private final Field2d m_field2d = new Field2d();
+  private final Field2d field2d = new Field2d();
 
   /** Creates a new RomiDrivetrain. */
   public Chassis() {
@@ -52,7 +52,7 @@ public class Chassis extends SubsystemBase {
     // Invert right side since motor is flipped
     m_rightMotor.setInverted(true);
 
-    m_odometry = new DifferentialDriveOdometry(m_gyro.getRotation2d(), 0.0, 0.0);
+    odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getAngle()), 0.0, 0.0);
   }
 
   /** Drive the robot based on values in the range -1.0 to 1.0. */
@@ -88,26 +88,14 @@ public class Chassis extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry
-    Rotation2d gyroAngleRadians = Rotation2d.fromDegrees(-getAngle());
+    Rotation2d gyroAngleRadians = Rotation2d.fromDegrees(getAngle());
     double leftDistanceMeters = getLeftDistance();
     double rightDistanceMeters = getRightDistance();
-    m_odometry.update(gyroAngleRadians, leftDistanceMeters, rightDistanceMeters);
+    odometry.update(gyroAngleRadians, leftDistanceMeters, rightDistanceMeters);
 
     // Also update the Field2D object (so that we can visualize this in sim)
     Pose2d currentPose = getPose();
-    m_field2d.setRobotPose(currentPose);
-
-    if (DEBUG) {
-      SmartDashboard.putNumber("gyroAngleRadians", gyroAngleRadians.getRadians());
-      SmartDashboard.putNumber("leftDistanceMeters", leftDistanceMeters);
-      SmartDashboard.putNumber("rightDistanceMeters", rightDistanceMeters);
-      SmartDashboard.putString("currentPose", currentPose.toString());
-    }
-  }
-
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
+    field2d.setRobotPose(currentPose);
   }
 
   /** Drive the robot based on voltage values. */
@@ -130,7 +118,7 @@ public class Chassis extends SubsystemBase {
    * @return robot pose in radians and meters.
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return odometry.getPoseMeters();
   }
 
   /**
@@ -140,6 +128,6 @@ public class Chassis extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    m_odometry.resetPosition(Rotation2d.fromDegrees(-getAngle()), 0.0, 0.0, pose);
+    odometry.resetPosition(Rotation2d.fromDegrees(getAngle()), 0.0, 0.0, pose);
   }
 }
