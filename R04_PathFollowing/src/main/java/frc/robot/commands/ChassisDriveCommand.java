@@ -23,7 +23,9 @@ public class ChassisDriveCommand extends CommandBase {
 
   @Override
   public void execute() {
-    chassis.arcadeDrive(speedSupplier.get(), rotateSupplier.get());
+    double speed = speedSupplier.get();
+    double rotation = rotateSupplier.get();
+    chassis.arcadeDrive(speed, rotation);
   }
 
   @Override

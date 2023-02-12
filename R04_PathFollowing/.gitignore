@@ -157,6 +157,8 @@ bin/
 # WPILib simulator files
 networktables.ini*
 networktables.json*
+outlineviewer-window.json
+outlineviewer.json
 simgui*
 
 # IntelliJ

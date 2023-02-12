@@ -49,16 +49,4 @@ public class ChassisPoseListCommand extends AbstractTrajectoryCommand {
         this.poseWaypoints,
         config);
   }
-
-  /**
-   * Convenience function to make a {@code Pose2d} with three simple arguments.
-   * 
-   * @param x     dimension in meters.
-   * @param y     dimension in meters.
-   * @param angleDegrees angle in degrees.
-   * @return a new {@code Pose2d}.
-   */
-  public static Pose2d makeWaypoint(double x, double y, double angle) {
-    return new Pose2d(x, y, new Rotation2d(Units.degreesToRadians(angle)));
-  }
 }

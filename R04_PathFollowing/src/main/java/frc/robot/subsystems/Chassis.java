@@ -44,14 +44,10 @@ public class Chassis extends SubsystemBase {
 
   /** Creates a new RomiDrivetrain. */
   public Chassis() {
-    // Use inches as unit for encoder distances
-    // m_leftEncoder.setDistancePerPulse((Math.PI * kWheelDiameterInch) /
-    // kCountsPerRevolution);
-    // m_rightEncoder.setDistancePerPulse((Math.PI * kWheelDiameterInch) /
-    // kCountsPerRevolution);
     m_leftEncoder.setDistancePerPulse((Math.PI * ROMI_WHEEL_DIAMETER_METER) / ROMI_COUNTS_PER_REVOLUTION);
     m_rightEncoder.setDistancePerPulse((Math.PI * ROMI_WHEEL_DIAMETER_METER) / ROMI_COUNTS_PER_REVOLUTION);
     resetEncoders();
+    m_gyro.reset();
 
     // Invert right side since motor is flipped
     m_rightMotor.setInverted(true);
@@ -75,26 +71,41 @@ public class Chassis extends SubsystemBase {
   }
 
   /** @return left encoder distance in meters. */
-  public double getLeftDistance() {
+  public double getLeftEncoder() {
     return m_leftEncoder.getDistance();
   }
 
   /** @return right encoder distance in meters. */
-  public double getRightDistance() {
+  public double getRightEncoder() {
     return m_rightEncoder.getDistance();
   }
 
-  /** @return current angle in radians. */
-  public Rotation2d getGyroAngle() {
-    return m_gyro.getRotation2d();
+  /** @return right robot distance traveled in meters. */
+  public double getAverageEncoderDistance() {
+    return (getRightEncoder() + getLeftEncoder()) / 2.0;
+  }
+
+  /** @return current yaw angle in degrees. */
+  public double getAngle() {
+    return m_gyro.getAngle();
+  }
+
+  /** @return current pitch angle in degrees. */
+  public double getPitch() {
+    return m_gyro.getAngleY();
+  }
+
+  /** @return current pitch angle in degrees. */
+  public double getRoll() {
+    return m_gyro.getAngleX();
   }
 
   @Override
   public void periodic() {
     // Update the odometry
-    Rotation2d gyroAngleRadians = getGyroAngle();
-    double leftDistanceMeters = getLeftDistance();
-    double rightDistanceMeters = getRightDistance();
+    Rotation2d gyroAngleRadians = Rotation2d.fromDegrees(-getAngle());
+    double leftDistanceMeters = getLeftEncoder();
+    double rightDistanceMeters = getRightEncoder();
     m_odometry.update(gyroAngleRadians, leftDistanceMeters, rightDistanceMeters);
 
     // Also update the Field2D object (so that we can visualize this in sim)
@@ -102,7 +113,7 @@ public class Chassis extends SubsystemBase {
     m_field2d.setRobotPose(currentPose);
 
     if (DEBUG) {
-      SmartDashboard.putNumber("gyroAngleRadians", gyroAngleRadians.getRadians());
+      SmartDashboard.putNumber("angle", getAngle());
       SmartDashboard.putNumber("leftDistanceMeters", leftDistanceMeters);
       SmartDashboard.putNumber("rightDistanceMeters", rightDistanceMeters);
       SmartDashboard.putString("currentPose", currentPose.toString());
@@ -144,6 +155,7 @@ public class Chassis extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    m_odometry.resetPosition(getGyroAngle(), 0.0, 0.0, pose);
+    Rotation2d gyroAngleRadians = Rotation2d.fromDegrees(-getAngle());
+    m_odometry.resetPosition(gyroAngleRadians, 0.0, 0.0, pose);
   }
 }

@@ -38,6 +38,8 @@ public class ChassisWaypointCommand extends AbstractTrajectoryCommand {
   }
 
   /**
+   * Visit waypoints, ending in the starting position.
+   * 
    * @param waypoints List of waypoints, measured in meters.
    * @param chassis   The {@link Chassis} subsystem.
    */
