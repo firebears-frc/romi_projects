@@ -47,7 +47,7 @@ public class Chassis extends SubsystemBase {
     m_leftEncoder.setDistancePerPulse((Math.PI * ROMI_WHEEL_DIAMETER_METER) / ROMI_COUNTS_PER_REVOLUTION);
     m_rightEncoder.setDistancePerPulse((Math.PI * ROMI_WHEEL_DIAMETER_METER) / ROMI_COUNTS_PER_REVOLUTION);
     resetEncoders();
-    m_gyro.reset();
+    resetGyro();
 
     // Invert right side since motor is flipped
     m_rightMotor.setInverted(true);
@@ -68,6 +68,10 @@ public class Chassis extends SubsystemBase {
   public void resetEncoders() {
     m_leftEncoder.reset();
     m_rightEncoder.reset();
+  }
+
+  public void resetGyro() {
+    m_gyro.reset();
   }
 
   /** @return left encoder distance in meters. */

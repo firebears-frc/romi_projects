@@ -53,6 +53,10 @@ public abstract class AbstractTrajectoryCommand extends CommandBase {
     }
     chassis.resetOdometry(trajectory.getInitialPose());
     ramseteCommand.initialize();
+
+    if (DEBUG) {
+      System.out.println("initializing " + this);
+    }
   }
 
   @Override
@@ -68,5 +72,10 @@ public abstract class AbstractTrajectoryCommand extends CommandBase {
   @Override
   public boolean isFinished() {
     return ramseteCommand.isFinished();
+  }
+
+  @Override
+  public String toString() {
+    return ((this.getClass().getSimpleName()) + "(" + this.trajectory + ")");
   }
 }
