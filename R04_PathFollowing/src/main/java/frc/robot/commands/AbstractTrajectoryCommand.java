@@ -78,4 +78,34 @@ public abstract class AbstractTrajectoryCommand extends CommandBase {
   public String toString() {
     return ((this.getClass().getSimpleName()) + "(" + this.trajectory + ")");
   }
+
+  static class WrappedTrajectory extends Trajectory {
+
+    private double totalTimeSeconds = -1.0;
+    private final Trajectory innTrajectory;
+
+    public WrappedTrajectory(Trajectory trajectory) {
+      this(trajectory, -1.0);
+    }
+
+    public WrappedTrajectory(Trajectory trajectory, double seconds) {
+      super(trajectory.getStates());
+      innTrajectory = trajectory;
+      totalTimeSeconds = seconds;
+    }
+
+    @Override
+    public double getTotalTimeSeconds() {
+      return totalTimeSeconds > 0 ? totalTimeSeconds : innTrajectory.getTotalTimeSeconds();
+    }
+
+    public void setTotalTimeSeconds(double seconds) {
+      totalTimeSeconds = seconds;
+    }
+
+    @Override
+    public String toString() {
+      return "WrappedTrajectory(" + totalTimeSeconds + ")";
+    }
+  }
 }

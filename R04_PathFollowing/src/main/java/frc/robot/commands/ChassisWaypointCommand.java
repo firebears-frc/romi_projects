@@ -64,10 +64,12 @@ public class ChassisWaypointCommand extends AbstractTrajectoryCommand {
         .setKinematics(driveKinematics)
         .addConstraint(autoVoltageConstraint);
 
-    return TrajectoryGenerator.generateTrajectory(
+    Trajectory trajector = TrajectoryGenerator.generateTrajectory(
         this.startPose,
         this.waypoints,
         this.endPose,
         config);
+
+    return new WrappedTrajectory(trajector);
   }
 }
