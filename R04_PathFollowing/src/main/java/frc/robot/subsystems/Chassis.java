@@ -47,6 +47,7 @@ public class Chassis extends SubsystemBase {
     m_leftEncoder.setDistancePerPulse((Math.PI * ROMI_WHEEL_DIAMETER_METER) / ROMI_COUNTS_PER_REVOLUTION);
     m_rightEncoder.setDistancePerPulse((Math.PI * ROMI_WHEEL_DIAMETER_METER) / ROMI_COUNTS_PER_REVOLUTION);
     resetEncoders();
+    m_gyro.reset();
     resetGyro();
 
     // Invert right side since motor is flipped
@@ -145,7 +146,7 @@ public class Chassis extends SubsystemBase {
 
   /**
    * Returns the currently estimated odometry pose of the robot.
-   * 
+   *
    * @return robot pose in radians and meters.
    */
   public Pose2d getPose() {
@@ -154,7 +155,7 @@ public class Chassis extends SubsystemBase {
 
   /**
    * Resets the odometry to the specified pose
-   * 
+   *
    * @param pose The pose to which to set the odometry, in radians and meters.
    */
   public void resetOdometry(Pose2d pose) {
@@ -163,3 +164,4 @@ public class Chassis extends SubsystemBase {
     m_odometry.resetPosition(gyroAngleRadians, 0.0, 0.0, pose);
   }
 }
+

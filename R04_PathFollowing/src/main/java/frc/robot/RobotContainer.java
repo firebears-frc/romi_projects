@@ -46,9 +46,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     chassis.setDefaultCommand(new ChassisDriveCommand(
-        () -> xboxController.getRawAxis(1),
-        () -> xboxController.getRawAxis(0),
-        chassis));
+            () -> xboxController.getRawAxis(1),
+            () -> xboxController.getRawAxis(0),
+            chassis));
   }
 
   /**
@@ -57,15 +57,26 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    // autonomousCommand = new ChassisPathWeaverCommand("eight.wpilib.json",
+    // chassis);
 
     // autonomousCommand = new ChassisPathWeaverCommand("eight.wpilib.json", chassis);
 
     // autonomousCommand = new ChassisWaypointCommand(List.of(
+    // new Translation2d(0.5, 0.25),
+    // new Translation2d(1.0, 0),
+    // new Translation2d(0.5, -0.25)), chassis);
     //     new Translation2d(0.5, 0.25),
     //     new Translation2d(1.0, 0),
     //     new Translation2d(0.5, -0.25)), chassis);
 
     // autonomousCommand = new ChassisWaypointCommand(
+    // new Pose2d(0, 0, new Rotation2d(0)),
+    // List.of(
+    // new Translation2d(0.7, 0.3),
+    // new Translation2d(1.3, -0.3)),
+    // new Pose2d(2.0, 0.0, new Rotation2d(0.0)),
+    // chassis);
     //     new Pose2d(0, 0, new Rotation2d(0)),
     //     List.of(
     //         new Translation2d(0.7, 0.3),
@@ -73,6 +84,12 @@ public class RobotContainer {
     //     new Pose2d(2.0, 0.0, new Rotation2d(0.0)),
     //     chassis);
 
+    autonomousCommand = new ChassisPoseListCommand(
+            List.of(
+                    new Pose2d(0.7, 0.3, new Rotation2d(degreesToRadians(0))),
+                    new Pose2d(1.3, -0.3, new Rotation2d(degreesToRadians(0))),
+                    new Pose2d(1.5, 0.0, new Rotation2d(degreesToRadians(90)))),
+            chassis);
     // autonomousCommand = new ChassisPoseListCommand(
     //     List.of(
     //         new Pose2d(0.7, 0.3, new Rotation2d(degreesToRadians(0))),
@@ -81,40 +98,56 @@ public class RobotContainer {
     //     chassis);
 
     // autonomousCommand = new ChassisPoseListCommand(
+    // List.of(
+    // new Pose2d(0.0, inchesToMeters(24), new Rotation2d(degreesToRadians(0))),
+    // new Pose2d(inchesToMeters(36), inchesToMeters(36), new
+    // Rotation2d(degreesToRadians(0))),
+    // new Pose2d(1.5, 0.0, new Rotation2d(degreesToRadians(90)))),
+    // chassis);
     //     List.of(
     //         new Pose2d(0.0, inchesToMeters(24), new Rotation2d(degreesToRadians(0))),
     //         new Pose2d(inchesToMeters(36), inchesToMeters(36), new Rotation2d(degreesToRadians(0))),
     //         new Pose2d(1.5, 0.0, new Rotation2d(degreesToRadians(90)))),
     //     chassis);
 
+    // List<Pose2d> poseWaypoints = List.of(
+    // new Pose2d(0.7, 0.0, new Rotation2d(degreesToRadians(0))),
+    // new Pose2d(1.3, 0.0, new Rotation2d(degreesToRadians(45))));
+    // autonomousCommand = new ChassisPoseListCommand(poseWaypoints, chassis);
     // autonomousCommand = new ChassisWaypointCommand(
     //     new Pose2d(0, 0, new Rotation2d(0)),
     //     List.of(new Translation2d(0.7, 0.3)),
     //     new Pose2d(1.2, 0.0, new Rotation2d(-45)),
     //     chassis);
 
+    Pose2d startPose = new Pose2d(0, 0, new Rotation2d(0));
+    List<Translation2d> waypoints = List.of(new Translation2d(0.7, 0.3));
+    Pose2d endPose = new Pose2d(1.2, 0.0, new Rotation2d(-45));
+    autonomousCommand = new ChassisWaypointCommand(startPose, waypoints, endPose, chassis);
     // autonomousCommand = new ChassisWaypointCommand(
     //     new Pose2d(0, 0, new Rotation2d(0)),
     //     List.of(new Translation2d(0.7, 0.3)),
     //     new Pose2d(1.2, 0.0, new Rotation2d(-45)),
     //     chassis);
 
+    return autonomousCommand
     autonomousCommand = new ChassisWaypointCommand(
-      new Pose2d(0, 0, new Rotation2d(0)),
-      List.of(
-        new Translation2d(0.6, -0.3),
-        new Translation2d(1.0, 0.0),
-        new Translation2d(0.6, 0.3),
-        new Translation2d(0.1, 0.3)
-      ),
-      new Pose2d(0.0, 0.3, new Rotation2d(180)),
-      chassis);
+            new Pose2d(0, 0, new Rotation2d(0)),
+            List.of(
+                    new Translation2d(0.6, -0.3),
+                    new Translation2d(1.0, 0.0),
+                    new Translation2d(0.6, 0.3),
+                    new Translation2d(0.1, 0.3)
+            ),
+            new Pose2d(0.0, 0.3, new Rotation2d(180)),
+            chassis);
 
     return (new InstantCommand(() -> {
       chassis.resetEncoders();
       chassis.resetGyro();
     }))
-        .andThen(autonomousCommand)
-        .andThen(() -> chassis.stop());
+            .andThen(autonomousCommand)
+            .andThen(() -> chassis.stop());
   }
 }
+
