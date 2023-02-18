@@ -16,7 +16,7 @@ When calculating waypoints, the X coordinate is in the direction that the robot 
 ![Romi Coordinates](./img/romi_coordinates.svg)
 
 Here's an example:
-The first waypoint will be 0.6 meters forward and 0.3 meters to the right (about 2 feet forward and 1 foot right).  The second waypoint will be 1 meter forward of the starting point.  The third waypoint will be heading back towards the starting point but to the right of the start.  The ending point should be even with the starting point but 0.3 meters to the left.
+The first waypoint will be 0.6 meters forward and 0.3 meters to the right (about 2 feet forward and 1 foot right).  The second waypoint will be 1 meter forward of the starting point.  The third waypoint will be heading back towards the starting point but to the left of the start.  The ending point should be even with the starting point but 0.3 meters to the left.
 ```java
    autonomousCommand = new ChassisWaypointCommand(
       new Pose2d(0, 0, new Rotation2d(0)),
