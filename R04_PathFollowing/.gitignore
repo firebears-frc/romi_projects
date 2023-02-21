@@ -159,6 +159,7 @@ networktables.ini*
 networktables.json*
 outlineviewer-window.json
 outlineviewer.json
+.OutlineViewer/
 simgui*
 
 # IntelliJ
