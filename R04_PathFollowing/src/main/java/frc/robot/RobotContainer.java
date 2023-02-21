@@ -130,7 +130,6 @@ public class RobotContainer {
     //     new Pose2d(1.2, 0.0, new Rotation2d(-45)),
     //     chassis);
 
-    return autonomousCommand
     autonomousCommand = new ChassisWaypointCommand(
             new Pose2d(0, 0, new Rotation2d(0)),
             List.of(
